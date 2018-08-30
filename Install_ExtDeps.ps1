@@ -13,7 +13,6 @@ Else
 $ADMod = Get-Module -ListAvailable -Name "ActiveDirectory"
 IF (-Not $ADMod)
 {
-	[switch]$Test = $false
 
 	If ((Get-CimInstance Win32_OperatingSystem).Caption -like "*Windows 10*")
 	{
