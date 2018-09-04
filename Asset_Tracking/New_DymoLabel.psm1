@@ -29,7 +29,7 @@ Function New-DymoLabel
 		$dymoPrint = Get-Printer -Name "*dymo*"
 		If(!$dymoPrint)
 		{
-			echo 'You do not have a DYMO printer'
+			Write-Output 'You do not have a DYMO printer'
 			BREAK
 		}
 		$dymmoSoft = get-package -Name "*Dymo Label*" -ErrorAction SilentlyContinue
@@ -47,7 +47,7 @@ Function New-DymoLabel
 			[reflection.assembly]::LoadFile('C:\Program Files (x86)\DYMO\DYMO Label Software\Framework\DYMO.Label.Framework.dll')
 			[reflection.assembly]::LoadFile('C:\Program Files (x86)\DYMO\DYMO Label Software\Framework\DYMO.Common.dll')
 
-			$printername = [DYMO.Label.Framework.Framework]::GetLabelWriterPrinters() | select -ExpandProperty name
+			$printername = [DYMO.Label.Framework.Framework]::GetLabelWriterPrinters() | Select-Object -ExpandProperty name
 
 			$labelfile = '\\kite\IT Dept\Applications\Dymo\AssetID Template.label'
 
