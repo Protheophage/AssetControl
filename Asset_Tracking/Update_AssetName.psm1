@@ -38,6 +38,17 @@ Function Update-AssetName
 		Foreach($N in $Name)
 		{
 			$NN = $NewName[$i]
+			if(Test-Connection -Cn $NN -BufferSize 16 -Count 1 -ea 0 -quiet)
+				{
+					$CmpDsc = Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem | Select-Object Description
+					Invoke-Sqlcmd "
+					BEGIN TRANSACTION
+					UPDATE [dbo].[AssetList]
+					SET description = '$CmpDsc'
+					WHERE asset_name COLLATE SQL_Latin1_General_CP1_CI_AS = '$N';
+					COMMIT TRANSACTION;
+					"
+				}
 			Invoke-Sqlcmd "
 			BEGIN TRANSACTION
 			UPDATE [dbo].[AssetList]
