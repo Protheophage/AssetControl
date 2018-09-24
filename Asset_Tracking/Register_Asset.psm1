@@ -27,7 +27,6 @@ Function Get-AssetName
 	#>
 	[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 	$comp = [Microsoft.VisualBasic.Interaction]::InputBox("Enter the name of the asset to register", "Register New Asset", " ")
-	$comp.focus
 	IF(!$comp){BREAK}
 	[single]$purval = [Microsoft.VisualBasic.Interaction]::InputBox("Enter the purchase value of asset to register", "Register New Asset", " ")
 	IF(!$purval){BREAK}
