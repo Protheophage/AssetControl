@@ -12,6 +12,8 @@ Function Get-AssetInfo
 	Looks for a string from the input.
 	.PARAMETER AssetID
 	Looks for an Integer from the input.
+	.PARAMETER Serial
+	Use this to search for an asset by serial number.
 	.PARAMETER LogPath
 	Defaults to desktop if no value is entered with -LogPath
 	
@@ -38,6 +40,14 @@ Function Get-AssetInfo
 	.EXAMPLE
 	Get-AssetInfo -AssetName "IT-%","MK-%","HO-%"
 	Search for multiple groups of assets by department code
+
+	.EXAMPLE
+	Get-AssetInfo -Serial '2NYDNL1'
+	Search for a single asset by serial number
+
+	.EXAMPLE
+	Get-AssetInfo -Serial '2NYDNL1','3KYNLD2'
+	Search for multiple assets by serial number
 	#>
 	[CmdletBinding()]
 	Param
@@ -46,6 +56,7 @@ Function Get-AssetInfo
 		[String[]]$AssetName,
 		[parameter(ValueFromPipeline=$True)]
 		[Int[]]$AssetID,
+		[String[]]$Serial,
 		$LogPath
 	)
 	BEGIN
@@ -56,7 +67,7 @@ Function Get-AssetInfo
 	}
 	PROCESS
 	{
-		If(!$AssetName)
+		If(!$AssetName -and !$Serial)
 		{
 			Foreach($ID in $AssetID)
 			{
@@ -65,12 +76,19 @@ Function Get-AssetInfo
 			$ChangeLog = $ChangeLog + ($cmpFnd)
 			}
 		}
-		ELSE
+		ELSEIF(!$AssetID -and !$Serial)
 		{
 			Foreach($Name in $AssetName)
 			{
-
 			$cmpFnd = Invoke-Sqlcmd "SELECT * FROM [dbo].[AssetList] Where asset_name LIKE '$Name';"
+			$ChangeLog = $ChangeLog + ($cmpFnd)
+			}
+		}
+		ELSE
+		{
+			ForEach($num in $Serial)
+			{
+			$cmpFnd = Invoke-Sqlcmd "SELECT * FROM [dbo].[AssetList] Where serial_number LIKE '$num';"
 			$ChangeLog = $ChangeLog + ($cmpFnd)
 			}
 		}

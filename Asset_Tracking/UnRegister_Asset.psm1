@@ -16,7 +16,15 @@ Function UnRegister-Asset
 	
 	.EXAMPLE
 	UnRegister-Asset('1892','1968','1969')
-	Retire multiple assets.
+    Retire multiple assets.
+    
+    .EXAMPLE
+	Retire-Asset('1892')
+	Retire one asset.
+	
+	.EXAMPLE
+	Retire-Asset('1892','1968','1969')
+    Retire multiple assets.
 	#>
 	
 	[CmdletBinding()]
