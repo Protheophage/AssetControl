@@ -47,15 +47,15 @@ Function UnRegister-Asset
             $rsNum = $cmpFnd.serial_number
             $rMan = $cmpFnd.manufacturer
             $rMod = $cmpFnd.model
-            $rpPrice = $cmpFnd.purch_price
+            $[Double]rpPrice = $cmpFnd.purch_price
             
             $tDate = (GET-DATE)
             $span = NEW-TIMESPAN -Start $cmpFnd.date_added -End $tDate
             [Int]$age = $span.days/365
             IF($age -lt 4 -and $age -gt 0)
-                {$rVal = $cmpFnd.purch_price/$age}
+                {[Double]$rVal = $cmpFnd.purch_price/$age}
             ELSE
-                {$rVal = 0}
+                {[Double]$rVal = 0.00}
 
             Invoke-Sqlcmd "
 			BEGIN TRANSACTION
