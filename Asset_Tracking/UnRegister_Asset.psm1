@@ -47,7 +47,14 @@ Function UnRegister-Asset
             $rsNum = $cmpFnd.serial_number
             $rMan = $cmpFnd.manufacturer
             $rMod = $cmpFnd.model
-            [Double]$rpPrice = $cmpFnd.purch_price
+            If(!$cmpFnd.purch_price)
+            {
+                [Double]$rpPrice = 0.00
+            }
+            ELSE
+            {
+                [Double]$rpPrice = $cmpFnd.purch_price
+            }
             
             $tDate = (GET-DATE)
             $span = NEW-TIMESPAN -Start $cmpFnd.date_added -End $tDate
