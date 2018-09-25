@@ -47,7 +47,8 @@ Function UnRegister-Asset
             $rsNum = $cmpFnd.serial_number
             $rMan = $cmpFnd.manufacturer
             $rMod = $cmpFnd.model
-            If(!$cmpFnd.purch_price)
+            $tester = $cmpfnd.purch_price.gettype() | Select-Object name
+            If($tester.Name = 'DBNull')
             {
                 [Double]$rpPrice = 0.00
             }
