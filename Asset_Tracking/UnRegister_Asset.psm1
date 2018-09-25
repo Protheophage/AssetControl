@@ -42,7 +42,7 @@ Function UnRegister-Asset
 		{
             $cmpFnd = Invoke-Sqlcmd "SELECT * FROM [dbo].[AssetList] Where asset_id LIKE '$ID';"
             $rdReg = $cmpFnd.date_added
-            $raID = $cmpFnd.asset_id
+            [Int]$raID = $cmpFnd.asset_id
             $ratName = $cmpFnd.asset_type_name
             $rsNum = $cmpFnd.serial_number
             $rMan = $cmpFnd.manufacturer
