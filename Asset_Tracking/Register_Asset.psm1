@@ -142,13 +142,57 @@ Function Is-Online
 
 	if(!(Test-Connection -Cn $comp -BufferSize 16 -Count 1 -ea 0 -quiet))
 	{
-		##Tell user what is happening
-		$wshell = New-Object -ComObject Wscript.Shell
-		$wshell.Popup("Could not connect to $($comp), updating log.",3,"Progress Update",0x0)
-		Add-Content -Path "\\kite\IT Dept\Applications\!PC Deployment\Scripts\AssetLog.txt" -value ''
-		Add-Content -Path "\\kite\IT Dept\Applications\!PC Deployment\Scripts\AssetLog.txt" -value "Could not connect $comp"
-		$incr = $incr+1
-		Break
+
+		[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
+		[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") 
+		$objFormA = New-Object System.Windows.Forms.Form 
+		$objFormA.Text = "Warning"
+		$objFormA.Size = New-Object System.Drawing.Size(200,140) 
+		$objFormA.StartPosition = "CenterScreen"
+		
+		$objFormA.KeyPreview = $True
+		$objFormA.Add_KeyDown({
+			if ($_.KeyCode -eq "Enter" -or $_.KeyCode -eq "Escape"){
+				$objFormA.Close()
+			}
+		})
+		
+		$PCbutton = New-Object System.Windows.Forms.Button
+		$PCbutton.Location = New-Object System.Drawing.Size(20,60)
+		$PCbutton.Size = New-Object System.Drawing.Size(75,23)
+		$PCbutton.Text = "Continue"
+		$PCbutton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+		$objFormA.AcceptButton = $PCbutton
+		$objFormA.Controls.Add($PCbutton)
+		
+		$OtherButton = New-Object System.Windows.Forms.Button
+		$OtherButton.Location = New-Object System.Drawing.Size(90,60)
+		$OtherButton.Size = New-Object System.Drawing.Size(75,23)
+		$OtherButton.Text = "Exit"
+		$OtherButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+		$objFormA.CancelButton = $OtherButton
+		$objFormA.Controls.Add($OtherButton)
+		
+		$objLabelA = New-Object System.Windows.Forms.Label
+		$objLabelA.Location = New-Object System.Drawing.Size(20,20) 
+		$objLabelA.Size = New-Object System.Drawing.Size(180,100)
+		$objLabelA.Text = "The PC appears to be offline.`nWould you like to continue?"
+		$objFormA.Controls.Add($objLabelA)
+		
+			$objFormA.Topmost = $True
+		
+		$objFormA.Add_Shown({$objFormA.Activate()})
+		
+		$WhtKnd = $objFormA.ShowDialog()
+	
+		If ($WhtKnd -eq "OK")
+		{
+			Get-AssetID
+		}
+		Else
+		{
+			BREAK
+		}
 	}
 	ELSE
 	{
