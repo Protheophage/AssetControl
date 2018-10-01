@@ -25,11 +25,9 @@ Function Get-AssetName
 	Get Asset name from user and assign to $comp
 	Get Purchase Value from user and assign to $purval
 	#>
-	[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
-	$comp = [Microsoft.VisualBasic.Interaction]::InputBox("Enter the name of the asset to register", "Register New Asset", " ")
-	IF(!$comp){BREAK}
-	[single]$purval = [Microsoft.VisualBasic.Interaction]::InputBox("Enter the purchase value of asset to register", "Register New Asset", " ")
-	IF(!$purval){BREAK}
+	$uInp = Invoke-2InpBox -formTitle "Asset Information" -formPrompt "Please enter the asset name and purchase value." -b1Text "Asset Name:" -b2Text "Value:"
+	$comp = $uInp.Box1
+	[single]$purval = $uInp.Box2
     Is-inSQL
 }
 
