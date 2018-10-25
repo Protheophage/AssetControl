@@ -42,7 +42,7 @@ Function Get-LapsLog
 	{
 		IF(!$LogPath) {$LogPath = "$($env:USERPROFILE)\Desktop\Search_Log.txt"}
 		$ChangeLog = @()
-		Set-Location SQLSERVER:\SQL\Anu\SQLEXPRESS\Databases\Assets\tables
+		Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
 	}
 	PROCESS
 	{

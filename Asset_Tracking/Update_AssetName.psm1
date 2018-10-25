@@ -31,7 +31,7 @@ Function Update-AssetName
 	)
 	
 	BEGIN{
-		Set-Location SQLSERVER:\SQL\Anu\SQLEXPRESS\Databases\Assets\tables
+		Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
 		$i = 0
 	}
 	PROCESS{

@@ -35,7 +35,7 @@ Function UnRegister-Asset
 	)
 	
 	BEGIN{
-		Set-Location SQLSERVER:\SQL\Anu\SQLEXPRESS\Databases\Assets\tables
+		Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
 	}
 	PROCESS{
 		Foreach($ID in $AssetID)
