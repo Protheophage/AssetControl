@@ -1,4 +1,4 @@
-Function Get-NextAssetID
+Function Show-NextAssetID
 {
 	<#
 	.SYNOPSIS
