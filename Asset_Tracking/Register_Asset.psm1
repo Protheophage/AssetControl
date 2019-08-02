@@ -331,7 +331,7 @@ Function Send-SQLinfo
 	Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
 
 	##Update remaining info in SQL
-	Invoke-Sqlcmd "UPDATE dbo.AssetList SET date_added = GetDate(), date_updated = GetDate(), asset_name = '$SQName', asset_type_name = '$SQTypeName', serial_number = '$SQSerial', manufacturer = '$SQManufacturer', model = '$SQModel', description = '$CmpDescription', product_key = '$SQProdKey', status = '1', purch_price = $($purval) WHERE asset_id = '$Assetted';"
+	Invoke-Sqlcmd "UPDATE dbo.AssetList SET date_added = GetDate(), date_updated = GetDate(), asset_name = '$SQName', asset_type_name = '$SQTypeName', serial_number = '$SQSerial', manufacturer = '$SQManufacturer', model = '$SQModel', description = '$($CmpDescription).description', product_key = '$SQProdKey', status = '1', purch_price = $($purval) WHERE asset_id = '$Assetted';"
 	
 	##Show popup for user
 	$AsstLst = Invoke-Sqlcmd "SELECT * FROM dbo.AssetList WHERE asset_id = '$Assetted';"
