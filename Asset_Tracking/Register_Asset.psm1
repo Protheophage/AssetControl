@@ -40,9 +40,6 @@ Function Is-inSQL
 	.SYNOPSIS
 	Check if Asset Name is already in SQL
 	#>
-	##Tell user what is happening
-	$wshell = New-Object -ComObject Wscript.Shell
-	$wshell.Popup("Checking that $($comp) is not already in Asset Log.",3,$cmpFnd.asset_name,0x0)
 
 	##Set Location of PS instance to SQL Database
 	Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
@@ -135,10 +132,6 @@ Function Is-Online
 	
 	##Return to default PS location
 	Set-Location C:\WINDOWS\system32
-	
-	##Tell user what is happening
-	$wshell = New-Object -ComObject Wscript.Shell
-	$wshell.Popup("Checking that $($comp) is online.",3,"Progress Update",0x0)
 
 	if(!(Test-Connection -Cn $comp -BufferSize 16 -Count 1 -ea 0 -quiet))
 	{
