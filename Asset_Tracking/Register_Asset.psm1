@@ -31,9 +31,6 @@ Function Get-AssetName
     Is-inSQL
 }
 
-<#
-#>
- 
 Function Is-inSQL
 {
 	<#
@@ -62,9 +59,7 @@ Function Is-inSQL
 
 }
 
-<#
-#>
- 
+
 Function Get-AssetType
 {
 
@@ -120,9 +115,7 @@ Function Get-AssetType
 	}
 }
 
-<#
-#>
- 
+
 Function Is-Online
 {
 	<#
@@ -193,19 +186,13 @@ Function Is-Online
 	}
 }	
 
-<#
-#>
- 
+
 Function Get-PcInfo
 {
 	<#
 	.SYNOPSIS
 	Retrieve an Asset ID from SQL, reserve spot and, get info from PC
 	#>
-	
-    ##Tell user what is happening
-	$wshell = New-Object -ComObject Wscript.Shell
-	$wshell.Popup("$($comp) pre-checks completed.`nGathering PC information.",3,"Progress Update",0x0)
 
 	##Set Location of PS instance to SQL Database
 	Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
@@ -221,14 +208,11 @@ Function Get-PcInfo
 	Set-Location C:\WINDOWS\system32
 
 	##Store asset ID on PC
-    ##Tell user what is happening
-	$wshell = New-Object -ComObject Wscript.Shell
-	$wshell.Popup("Sending ID to $($comp).",3,"Progress Update",0x0)
 
 	##Create AssetID.txt
-	New-Item -ItemType directory -path "\\$comp\C$\Windows\Help\AssetID"
-	New-Item "\\$comp\C$\Windows\Help\AssetID\AssetID.txt" -ItemType file
-	set-content -path "\\$comp\C$\Windows\Help\AssetID\AssetID.txt" -Value $Assetted
+	##New-Item -ItemType directory -path "\\$comp\C$\Windows\Help\AssetID"
+	##New-Item "\\$comp\C$\Windows\Help\AssetID\AssetID.txt" -ItemType file
+	##set-content -path "\\$comp\C$\Windows\Help\AssetID\AssetID.txt" -Value $Assetted
 
 	##Get computer description and assign to CmpDescription
 	$CmpDescription = Get-WmiObject -ComputerName "$comp" -Class Win32_OperatingSystem | Select Description
@@ -242,9 +226,7 @@ Function Get-PcInfo
 	Send-ADinfo
 }
 
-<#
-#>
- 
+
 Function Send-ADinfo
 {
 	<#
@@ -254,10 +236,6 @@ Function Send-ADinfo
 	
 	##Return to default PS location
 	Set-Location C:\WINDOWS\system32
-
-    ##Tell user what is happening
-	$wshell = New-Object -ComObject Wscript.Shell
-	$wshell.Popup("$($comp) information gathered.`nUpdating AD and SQL.",3,"Progress Update",0x0)	
 
 	##Send Asset ID to AD Attribute "comment", Serial Number to AD Attribute "serialNumber", and Product Key to AD Attribute carLicense
 	$CompAD = Get-ADComputer -Identity $comp -Properties comment,carLicense,ms-Mcs-AdmPwd
@@ -309,9 +287,6 @@ Function Send-ADinfo
            ,'$SQLAPS')
 		GO"
  }
-  
-<#
-#>
  
 Function Send-SQLinfo
 {
@@ -333,40 +308,6 @@ Function Send-SQLinfo
 	
 	Out-Text
 }
-  
-<#
-#>
- 
-
-Function Out-Text
-{
-	<#
-	.SYNOPSIS
-	Create text doc on users desktop with registered asset information.
-	#>
-	Param
-	(
-		$Path
-	)
-	$Path = "$($env:USERPROFILE)\Desktop\Registered_Asset.txt"
-	If (!(Test-Path $Path))
-	{
-		New-Item $Path -ItemType File
-		$AsstLst | ForEach-Object {"`r`nDate Added: $($_.date_added)`r`nDate Updated: $($_.date_updated)`r`nAsset name: $($_.asset_name)`r`nAsset ID: $($_.asset_id)`r`nSerial Number: $($_.serial_number)`r`nManufacturer: $($_.manufacturer)`r`nModel: $($_.model)`r`nDescription: $($_.description)`r`nProduct Key: $($_.product_key)`r`nStatus: $($_.status)`r`nPurchase Price: $($_.purch_price)" | Add-Content -Path $Path}
-		Add-Content -Path $Path -Value "`r`nPLEASE REMEMBER TO DELETE THIS FILE WHEN YOU ARE FINISHED WITH IT."
-		notepad.exe $Path
-	}
-	Else
-	{
-		$AsstLst | ForEach-Object {"`r`nDate Added: $($_.date_added)`r`nDate Updated: $($_.date_updated)`r`nAsset name: $($_.asset_name)`r`nAsset ID: $($_.asset_id)`r`nSerial Number: $($_.serial_number)`r`nManufacturer: $($_.manufacturer)`r`nModel: $($_.model)`r`nDescription: $($_.description)`r`nProduct Key: $($_.product_key)`r`nStatus: $($_.status)`r`nPurchase Price: $($_.purch_price)" | Add-Content -Path $Path}
-		Add-Content -Path $Path -Value "`r`nPLEASE REMEMBER TO DELETE THIS FILE WHEN YOU ARE FINISHED WITH IT."
-		notepad.exe $Path
-	}
-	$AsstLst | ForEach-Object {$assetnumber = $($_.asset_id);$assetmodel = $($_.model);New-DymoLabel -AstNum $assetnumber -AstModel $assetmodel}
-}
-
-<#
-#>
  
 Function Get-ManualRegistration
 {
@@ -534,9 +475,6 @@ Function Get-ManualRegistration
 	
 	Send-SQLinfo
 }
-
-<#
-#>
  
 Function Get-AssetID
 {
@@ -545,10 +483,6 @@ Function Get-AssetID
 	Retrieve an Asset ID from SQL, and reserve spot
 	#>
 	
-    ##Tell user what is happening
-	$wshell = New-Object -ComObject Wscript.Shell
-	$wshell.Popup("Retrieving Asset ID for $($comp).",3,"Progress Update",0x0)
-
 	##Set Location of PS instance to SQL Database
 	Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
 	
@@ -564,9 +498,6 @@ Function Get-AssetID
 	
 	Get-ManualRegistration
 }
-
-<#
-#>
  
 Is-ITComp
 }
