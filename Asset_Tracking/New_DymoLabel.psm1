@@ -30,8 +30,8 @@ Function New-DymoLabel
 		If(!$dymoPrint)
 		{
 			Write-Output 'You do not have a DYMO printer'
-			Write-Output 'Adding DYMO printer \\IT-TV\DYMO-SOC'
-			Add-Printer -ConnectionName \\IT-TV\DYMO-SOC
+			Write-Output 'Adding DYMO printer \\IT-SYN\IT DYMO'
+			Add-Printer -ConnectionName "\\IT-SYN\IT DYMO"
 		}
 		$dymmoSoft = get-package -Name "*Dymo Label*" -ErrorAction SilentlyContinue
 		If(!$dymmoSoft)
