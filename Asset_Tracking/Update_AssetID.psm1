@@ -53,6 +53,5 @@ Function Update-AssetID
 	}
 	END{
 		Set-Location C:\WINDOWS\system32
-		$NewID | Get-AssetInfo
 	}
  }

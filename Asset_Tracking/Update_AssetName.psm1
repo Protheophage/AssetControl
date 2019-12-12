@@ -40,7 +40,7 @@ Function Update-AssetName
 			$NN = $NewName[$i]
 			if(Test-Connection -Cn $NN -BufferSize 16 -Count 1 -ea 0 -quiet)
 				{
-					$CmpDsc = Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem | Select-Object Description
+					$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
 					Invoke-Sqlcmd "
 					BEGIN TRANSACTION
 					UPDATE [dbo].[AssetList]
@@ -64,6 +64,5 @@ Function Update-AssetName
 	}
 	END{
 		Set-Location C:\WINDOWS\system32
-		$NewName | Get-AssetInfo
 	}
  }

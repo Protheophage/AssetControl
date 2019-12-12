@@ -22,6 +22,10 @@ Function Get-AssetInfo
 	Search by name.
 	
 	.EXAMPLE
+	$AssetInfo = Get-AssetInfo -AssetName "PC-42" -LogPath "None"
+	Search for asset by name, assign output to variable $AssetInfo, and do not create a log file.
+
+	.EXAMPLE
 	Get-AssetInfo -AssetName "PC-42","PC-69","PC-99" -LogPath "C:\logs\thislog.txt"
 	Search for multiple assets by name, and set custom log path.
 	
@@ -98,8 +102,11 @@ Function Get-AssetInfo
 		$ChangeLog = [PSObject]$ChangeLog
 		
 		Set-Location C:\WINDOWS\system32
-		
-			If (!(Test-Path $LogPath))
+		If ($LogPath = "None")
+		{
+			$ChangeLog = [PSObject]$ChangeLog
+		}
+		ElseIf (!(Test-Path $LogPath))
 		{
 			New-Item $LogPath -ItemType File
 			$ChangeLog | ForEach-Object {"`r`nDate Added: $($_.date_added)`r`nDate Updated: $($_.date_updated)`r`nAsset name: $($_.asset_name)`r`nAsset ID: $($_.asset_id)`r`nSerial Number: $($_.serial_number)`r`nManufacturer: $($_.manufacturer)`r`nModel: $($_.model)`r`nDescription: $($_.description)`r`nProduct Key: $($_.product_key)`r`nStatus: $($_.status)`r`nPurchase Price: $($_.purch_price)" | Add-Content -Path $LogPath}

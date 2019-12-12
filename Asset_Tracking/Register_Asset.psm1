@@ -215,7 +215,7 @@ Function Get-PcInfo
 	##set-content -path "\\$comp\C$\Windows\Help\AssetID\AssetID.txt" -Value $Assetted
 
 	##Get computer description and assign to CmpDescription
-	$CmpDescription = Get-WmiObject -ComputerName "$comp" -Class Win32_OperatingSystem | Select Description
+	$CmpDescription = (Get-WmiObject -ComputerName "$comp" -Class Win32_OperatingSystem).Description
 	
 	##Get Serial number and assign to srlnmbr
 	$srlnmbr = get-wmiobject -computername "$comp" win32_bios serialnumber
