@@ -1,70 +1,80 @@
-#Check if PC is Online
-if(!(Test-Connection -Cn $comp -BufferSize 16 -Count 1 -ea 0 -quiet))
+Function Set-DellBiosAsset
 {
-    $wshell = New-Object -ComObject Wscript.Shell
-    $wshell.Popup("$($comp) is not online.",3,$cmpFnd.asset_name,0x0)
-    Break
-}
-$manufact = (Get-WmiObject -ComputerName "$comp" Win32_SystemEnclosure).Manufacturer
-If($manufact = "*dell*")
-{
-    echo "its a dell"
-}
-#Check if PC is Dell
-##if not
-###Exit
-#Else 
-#Gather Serial number
-#Gather Description
-#Check BIOS for Asset Tag
-##If Not
-###check SQL for Serial Number and get Asset ID
-####If Asset ID less than 90000 & !Null
-#####Send to DellBIOS
-#####Update SQL Asset Name by Serial Number
-#####Update SQL Description by Serial Number
-####Else
-#####Warn that Asset ID not recorded in SQL
-#####Exit
-##Else
-###Update SQL Asset Name by Serial Number
-###Update SQL Asset ID by Serial Number
-###Update SQL Description by Serial Number
+    <#
+    .SYNOPSIS
+    Set the BIOS/UEFI Asset Tag on a Dell PC
 
-##From Get-AssetInfo
-ForEach($num in $Serial)
-			{
-			$cmpFnd = Invoke-Sqlcmd "SELECT * FROM [dbo].[AssetList] Where serial_number LIKE '$num';"
-			$ChangeLog = $ChangeLog + ($cmpFnd)
+    .DESCRIPTION
+    Checks if the Asset Tag value is set. If not quiry SQL (using Serial Number) for Asset ID, and set the BIOS/UEFI Asset Tag. Then updates Asset Name and Description in SQL.
 
-Is-Online
+    .PARAMETER Name
 
+    .EXAMPLE
+    Set-DellBiosAsset -Name 'PC-42','PC-13','PC-88'
+    Run process on multiple computers
+    #>
 
-##Get computer description and assign to CmpDescription
-	$CmpDescription = (Get-WmiObject -ComputerName "$comp" -Class Win32_OperatingSystem).Description
-	
-	##Get Serial number and assign to srlnmbr
-	$srlnmbr = get-wmiobject -computername "$comp" win32_bios serialnumber
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(ValueFromPipeline=$true)]
+        [String[]]$Name
+    )
 
-	##Get Windows Product Key, and assign to $ProdKey
-	$GetPK = get-wmiObject -computername "$comp" -query 'select * from SoftwareLicensingService'
-	$ProdKey = $GetPK.OA3xOriginalProductKey
-    
-    ##Check for BIOS Asset Tag
-    $abox = (Get-WmiObject -ComputerName "$comp" Win32_SystemEnclosure).SMBiosAssetTag
-    If (-Not $abox) 
+    Process
     {
-        $srlnmbr = get-wmiobject -computername "$comp" win32_bios serialnumber
+        Foreach($N in $Name)
+        {
+            #Check if PC is Online
+            If(!(Test-Connection -Cn $N -BufferSize 16 -Count 1 -ea 0 -quiet))
+            {
+                Continue
+            }
+            Else
+            {
+                #Check if PC is Dell
+                $manufact = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).Manufacturer
+                $biosAtag = ''
+                If($manufact = "*dell*")
+                {
+                    #Gather Serial number
+                    $srlnmbr = (get-wmiobject -computername "$N" win32_bios).serialnumber
+                    #Gather Description
+                    $CmpDescription = (Get-WmiObject -ComputerName "$N" -Class Win32_OperatingSystem).Description
+                    #Check BIOS for Asset Tag
+                    $biosAtag = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).SMBiosAssetTag
+                    If([string]::IsNullOrWhiteSpace($biosAtag))
+                    {
+                        [INT]$biosAtag = (Get-AssetInfo -Serial $srlnmbr -LogPath 'None').asset_id
+                        If($biosAtag -lt 90000)
+                        {
+                            #Set Asset Tag in BIOS
+                            C:\sysinternals\PsExec.exe \\$N -accepteula -s powershell.exe "Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force;Install-Module DellBIOSProvider -force;Import-Module DellBIOSProvider -force;si DellSmbios:\systeminformation\asset -Value $($biosAtag)"
+                            #Update Asset Name & Description in SQL
+                            Update-AssetName -Serial $srlnmbr -NewName $N
+                        }
+                        Else
+                        {
+                            Write-Host $N"Asset ID is not set in SQL. Please update the Asset ID in SQL."
+                            Continue
+                        }
+
+                    }
+                    Else
+                    {
+                        Update-AssetName -Serial $srlnmbr -NewName $N
+                        Update-AssetID -Name $N -NewID $biosAtag
+                    }
+                }
+                Else
+                {
+                    Continue
+                }
+            }
+        }
     }
-    Else 
+    End
     {
-        $abox
+        Write-Host "Process Complete"
     }
-
-
-(Get-WmiObject -ComputerName "$comp" Win32_SystemEnclosure).SMBiosAssetTag
-
-$abox = (Get-WmiObject -ComputerName "$comp" Win32_SystemEnclosure).SMBiosAssetTag
-If (-Not $abox) {echo "its empty"} Else {$abox}
-
-C:\sysinternals\PsExec.exe \\UC-1jxnrz2 -accepteula -s powershell.exe '"Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force"; "Import-Module DellBIOSProvider -force"; "get-childitem DellSmbios:\systeminformation\asset | select CurrentValue"; "$env:computername"'
+}
