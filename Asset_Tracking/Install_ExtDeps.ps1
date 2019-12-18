@@ -118,10 +118,7 @@ $ADMod = Get-Module -ListAvailable -Name "ActiveDirectory"
 			Get-ADDomain
 		} #>
 	}
-	Else
-	{
-		Import-Module ActiveDirectory
-    }
+	Import-Module ActiveDirectory
     
 
 $SQMod = Get-Module -ListAvailable -Name "SqlServer"
@@ -130,8 +127,4 @@ $SQMod = Get-Module -ListAvailable -Name "SqlServer"
 		Install-Module -Name "SqlServer"
 		Import-Module -Name "SqlServer"
 	}
-	Else
-	{
-		Write-Verbose "SqlServer module is already installed. Importing now."
-		Import-Module -Name "SqlServer"
-	}
+Import-Module -Name "SqlServer"
