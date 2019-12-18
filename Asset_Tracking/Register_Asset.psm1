@@ -306,7 +306,8 @@ Function Send-SQLinfo
 	$wshell = New-Object -ComObject Wscript.Shell
 	$wshell.Popup(($AsstLst | ForEach-Object { "Asset ID: $($_.asset_id)`nSerial Number: $($_.serial_number)"}),0,$AsstLst.asset_name,0x0)
 	
-	Out-Text
+	Set-Location C:\WINDOWS\system32
+	Set-DellBiosAsset -Name $AsstLst.asset_name
 }
  
 Function Get-ManualRegistration
