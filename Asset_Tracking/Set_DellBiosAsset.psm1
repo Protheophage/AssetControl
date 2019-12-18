@@ -28,6 +28,7 @@ Function Set-DellBiosAsset
             #Check if PC is Online
             If(!(Test-Connection -Cn $N -BufferSize 16 -Count 1 -ea 0 -quiet))
             {
+                Write-Host $N" is not online"
                 Continue
             }
             Else
@@ -35,7 +36,7 @@ Function Set-DellBiosAsset
                 #Check if PC is Dell
                 $manufact = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).Manufacturer
                 $biosAtag = ''
-                If($manufact = "*dell*")
+                If($manufact -like "*dell*")
                 {
                     #Gather Serial number
                     $srlnmbr = (get-wmiobject -computername "$N" win32_bios).serialnumber
@@ -52,22 +53,24 @@ Function Set-DellBiosAsset
                             C:\sysinternals\PsExec.exe \\$N -accepteula -s powershell.exe "Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force;Install-Module DellBIOSProvider -force;Import-Module DellBIOSProvider -force;si DellSmbios:\systeminformation\asset -Value $($biosAtag)"
                             #Update Asset Name & Description in SQL
                             Update-AssetName -Serial $srlnmbr -NewName $N
+                            Write-Host $N" completed"
                         }
                         Else
                         {
                             Write-Host $N"Asset ID is not set in SQL. Please update the Asset ID in SQL."
                             Continue
-                        }
-
+                        } 
                     }
                     Else
                     {
                         Update-AssetName -Serial $srlnmbr -NewName $N
                         Update-AssetID -Name $N -NewID $biosAtag
+                        Write-Host $N" completed"
                     }
                 }
                 Else
                 {
+                    Write-Host $N" is not a Dell."
                     Continue
                 }
             }
