@@ -1,4 +1,4 @@
-Function Set-DellBiosAsset
+Function Set-BiosAsset
 {
     <#
     .SYNOPSIS
@@ -10,7 +10,7 @@ Function Set-DellBiosAsset
     .PARAMETER Name
 
     .EXAMPLE
-    Set-DellBiosAsset -Name 'PC-42','PC-13','PC-88'
+    Set-BiosAsset -Name 'PC-42','PC-13','PC-88'
     Run process on multiple computers
     #>
 
@@ -33,15 +33,14 @@ Function Set-DellBiosAsset
             }
             Else
             {
-                #Check if PC is Dell
+                #Check PC type
                 $manufact = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).Manufacturer
+                $PcModel = (get-computerinfo).CsModel
                 $biosAtag = ''
                 If($manufact -like "*dell*")
                 {
                     #Gather Serial number
                     $srlnmbr = (get-wmiobject -computername "$N" win32_bios).serialnumber
-                    #Gather Description
-                    $CmpDescription = (Get-WmiObject -ComputerName "$N" -Class Win32_OperatingSystem).Description
                     #Check BIOS for Asset Tag
                     $biosAtag = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).SMBiosAssetTag
                     If([string]::IsNullOrWhiteSpace($biosAtag))
@@ -68,9 +67,40 @@ Function Set-DellBiosAsset
                         Write-Host $N" completed"
                     }
                 }
+                ElseIf($PcModel -like "*surface*")
+                {
+                    #Gather Serial number
+                    $srlnmbr = (get-wmiobject -computername "$N" win32_bios).serialnumber
+                    #Check BIOS for Asset Tag
+                    $biosAtag = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).SMBiosAssetTag
+                    If([string]::IsNullOrWhiteSpace($biosAtag))
+                    {
+                        [INT]$biosAtag = (Get-AssetInfo -Serial $srlnmbr -LogPath 'None').asset_id
+                        If($biosAtag -lt 90000)
+                        {
+                            #Set Asset Tag in BIOS
+                            C:\sysinternals\PsExec.exe \\$N -accepteula -s powershell.exe "Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force;Register-PSRepository -Name AOTW_PSRepo -SourceLocation '\\Kite\IT DEPT\Applications\!PC Deployment\Scripts\AOTW_PSRepo';Install-Module Install_SurfaceAssetTag -force;Import-Module Install_SurfaceAssetTag -force;Install-SurfaceAssetTag"
+                            C:\sysinternals\PsExec.exe \\$N -accepteula -s powershell.exe "assettag.exe -s $($biosAtag)"
+                            #Update Asset Name & Description in SQL
+                            Update-AssetName -Serial $srlnmbr -NewName $N
+                            Write-Host $N" completed"
+                        }
+                        Else
+                        {
+                            Write-Host $N"Asset ID is not set in SQL. Please update the Asset ID in SQL."
+                            Continue
+                        } 
+                    }
+                    Else
+                    {
+                        Update-AssetName -Serial $srlnmbr -NewName $N
+                        Update-AssetID -Name $N -NewID $biosAtag
+                        Write-Host $N" completed"
+                    }
+                }
                 Else
                 {
-                    Write-Host $N" is not a Dell."
+                    Write-Host $N" is not a Dell or a Surface."
                     Continue
                 }
             }
