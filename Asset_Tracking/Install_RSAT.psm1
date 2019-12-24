@@ -57,7 +57,7 @@ Function Install-RSATModule
 			#https://gallery.technet.microsoft.com/scriptcenter/files-from-websites-4a181ff3
 			$BaseURL = 'https://download.microsoft.com/download/1/D/8/1D8B5022-5477-4B9A-8104-6A71FF9D98AB/'
 			$URL = $BaseURL + $dl
-			$Destination = Join-Path -Path $HOME -ChildPath "Downloads\$dl"
+			$Destination = Join-Path -Path $HOME -ChildPath "Desktop\$dl"
 			$WebClient = New-Object System.Net.WebClient
 			$WebClient.DownloadFile($URL,$Destination)
 			$WebClient.Dispose()
@@ -75,41 +75,12 @@ Function Install-RSATModule
 			Write-Host "."
 			Write-Verbose "---$(Get-Date)"
 		}
-
-		<#RSAT installs with all features enabled by default now.
-		# The latest versions of the RSAT automatically enable all RSAT features
-		If ((Get-WindowsOptionalFeature -Online -FeatureName `
-			RSATClient-Roles-AD-Powershell -ErrorAction SilentlyContinue).State `
-			-eq 'Enabled')
-		{
-
-			Write-Verbose '---RSAT AD PowerShell already enabled'
-
-		}
-		Else
-		{
-
-			Write-Verbose '---Enabling RSAT AD PowerShell'
-			Enable-WindowsOptionalFeature -Online -FeatureName RSATClient-Roles-AD-Powershell
-
-		}
-		 #>
 		 
 		Write-Verbose '---Downloading help for AD PowerShell'
 		Update-Help -Module ActiveDirectory -Verbose -Force
 		Import-Module ActiveDirectory
 
 		Write-Verbose '---ActiveDirectory PowerShell module install complete.'
-
-		# Verify
-		<# If ($Test) 
-		{
-			Write-Verbose '---Validating AD PowerShell install'
-			dir (Join-Path -Path $HOME -ChildPath Downloads\*msu)
-			Get-HotFix -Id KB2693643
-			Get-Help Get-ADDomain
-			Get-ADDomain
-		} #>
 	}
 	Else
 	{
