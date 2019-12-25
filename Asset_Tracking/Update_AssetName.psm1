@@ -35,7 +35,8 @@ Function Update-AssetName
 		[String[]]$Name,
 		[parameter(ValueFromPipeline=$True)]
 		[String[]]$NewName,
-		[String]$Serial
+		[String]$Serial,
+		[Bool]$IsOnline
 	)
 	
 	BEGIN
@@ -50,9 +51,20 @@ Function Update-AssetName
 			Foreach($N in $Name)
 			{
 				$NN = $NewName[$i]
-				if(Test-Connection -Cn $NN -BufferSize 16 -Count 1 -ea 0 -quiet)
+				If(!$IsOnline)
 				{
-					$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					Invoke-Sqlcmd "
+					BEGIN TRANSACTION
+					UPDATE [dbo].[AssetList]
+					SET description = '$CmpDsc'
+					WHERE asset_name COLLATE SQL_Latin1_General_CP1_CI_AS = '$N';
+					COMMIT TRANSACTION;
+					"
+				}
+				ElseIf(Test-Connection -Cn $NN -BufferSize 16 -Count 1 -ea 0 -quiet)
+				{
+					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
 					Invoke-Sqlcmd "
 					BEGIN TRANSACTION
 					UPDATE [dbo].[AssetList]
@@ -79,9 +91,20 @@ Function Update-AssetName
 			Foreach($S in $Serial)
 			{
 				$NN = $NewName[$i]
-				if(Test-Connection -Cn $NN -BufferSize 16 -Count 1 -ea 0 -quiet)
+				If(!$IsOnline)
 				{
-					$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					Invoke-Sqlcmd "
+					BEGIN TRANSACTION
+					UPDATE [dbo].[AssetList]
+					SET description = '$CmpDsc'
+					WHERE serial_number COLLATE SQL_Latin1_General_CP1_CI_AS = '$S';
+					COMMIT TRANSACTION;
+					"
+				}
+				ElseIf(Test-Connection -Cn $NN -BufferSize 16 -Count 1 -ea 0 -quiet)
+				{
+					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
 					Invoke-Sqlcmd "
 					BEGIN TRANSACTION
 					UPDATE [dbo].[AssetList]

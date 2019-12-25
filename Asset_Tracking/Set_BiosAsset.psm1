@@ -8,34 +8,46 @@ Function Set-BiosAsset
     Checks if the Asset Tag value is set. If not quiry SQL (using Serial Number) for Asset ID, and set the BIOS/UEFI Asset Tag. Then updates Asset Name and Description in SQL.
 
     .PARAMETER Name
+    This is the current name of the asset
+    .PARAMETER IsOnline
+    Set this to 1 or $TRUE to overide the ping test to check if PC is online
 
     .EXAMPLE
     Set-BiosAsset -Name 'PC-42','PC-13','PC-88'
     Run process on multiple computers
+    
+    .EXAMPLE
+    Set-BiosAsset -Name 'PC-42-SURFACE' -IsOnline 1
+    Set-BiosAsset does a ping check to see if the asset is online by default.  The firewall settings on Surfaces blocks ICMP Ping requests, and causes the process to end.
+    Set -IsOnline 1 to run the process without checking if the PC is online 
     #>
 
     [CmdletBinding()]
     Param
     (
         [Parameter(ValueFromPipeline=$true)]
-        [String[]]$Name
+        [String[]]$Name,
+        [Bool]$IsOnline
     )
 
     Process
     {
         Foreach($N in $Name)
         {
-            #Check if PC is Online
-            If(!(Test-Connection -Cn $N -BufferSize 16 -Count 1 -ea 0 -quiet))
-            {
-                Write-Host $N" is not online"
-                Continue
+            If(!$IsOnline)  
+            {  
+                #Check if PC is Online
+                If(!(Test-Connection -Cn $N -BufferSize 16 -Count 1 -ea 0 -quiet))
+                {
+                    Write-Host $N" is not online"
+                    Continue
+                }
             }
             Else
             {
                 #Check PC type
                 $manufact = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).Manufacturer
-                $PcModel = (get-computerinfo).CsModel
+                $PcModel = (Get-WmiObject -ComputerName "$N" -Class Win32_ComputerSystem).model
                 $biosAtag = ''
                 If($manufact -like "*dell*")
                 {
@@ -73,16 +85,17 @@ Function Set-BiosAsset
                     $srlnmbr = (get-wmiobject -computername "$N" win32_bios).serialnumber
                     #Check BIOS for Asset Tag
                     $biosAtag = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).SMBiosAssetTag
-                    If([string]::IsNullOrWhiteSpace($biosAtag))
+                    If([string]::IsNullOrWhiteSpace($biosAtag) -OR $biosAtag -eq "0")
                     {
                         [INT]$biosAtag = (Get-AssetInfo -Serial $srlnmbr -LogPath 'None').asset_id
                         If($biosAtag -lt 90000)
                         {
                             #Set Asset Tag in BIOS
-                            C:\sysinternals\PsExec.exe \\$N -accepteula -s powershell.exe "Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force;Register-PSRepository -Name AOTW_PSRepo -SourceLocation '\\Kite\IT DEPT\Applications\!PC Deployment\Scripts\AOTW_PSRepo';Install-Module Install_SurfaceAssetTag -force;Import-Module Install_SurfaceAssetTag -force;Install-SurfaceAssetTag"
-                            C:\sysinternals\PsExec.exe \\$N -accepteula -s powershell.exe "assettag.exe -s $($biosAtag)"
+                            C:\sysinternals\PsExec.exe \\$N -accepteula -s powershell.exe "New-Item -Path 'c:\Program Files\' -Name 'SurfaceAssetTag' -ItemType 'directory' -Force"
+                            Copy-Item "\\kite\IT DEPT\Applications\Drivers\Device-Specific\Surface-Utils\Surface Asset Tag\AssetTag.exe" "\\$N\C$\Program Files\SurfaceAssetTag\AssetTag.exe" -Force
+                            C:\sysinternals\PsExec.exe \\$N -accepteula -s powershell.exe "Start-Process -filepath 'C:\Program Files\SurfaceAssetTag\AssetTag.exe' -ArgumentList '-s $($biosAtag)'"
                             #Update Asset Name & Description in SQL
-                            Update-AssetName -Serial $srlnmbr -NewName $N
+                            Update-AssetName -Serial $srlnmbr -NewName $N -IsOnline 1
                             Write-Host $N" completed"
                         }
                         Else
@@ -93,7 +106,7 @@ Function Set-BiosAsset
                     }
                     Else
                     {
-                        Update-AssetName -Serial $srlnmbr -NewName $N
+                        Update-AssetName -Serial $srlnmbr -NewName $N -IsOnline 1
                         Update-AssetID -Name $N -NewID $biosAtag
                         Write-Host $N" completed"
                     }
