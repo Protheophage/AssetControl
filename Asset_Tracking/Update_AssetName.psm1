@@ -54,10 +54,22 @@ Function Update-AssetName
 				If(!$IsOnline)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey
+					[String]$manufact = (Get-WmiObject -ComputerName "$NN" Win32_SystemEnclosure).Manufacturer
+                	[String]$PcModel = (Get-WmiObject -ComputerName "$NN" -Class Win32_ComputerSystem).model
 					Invoke-Sqlcmd "
 					BEGIN TRANSACTION
 					UPDATE [dbo].[AssetList]
 					SET description = '$CmpDsc'
+					WHERE asset_name COLLATE SQL_Latin1_General_CP1_CI_AS = '$N';
+					UPDATE [dbo].[AssetList]
+					SET product_key = '$ProdKey'
+					WHERE asset_name COLLATE SQL_Latin1_General_CP1_CI_AS = '$N';
+					UPDATE [dbo].[AssetList]
+					SET manufacturer = '$manufact'
+					WHERE asset_name COLLATE SQL_Latin1_General_CP1_CI_AS = '$N';
+					UPDATE [dbo].[AssetList]
+					SET model = '$PcModel'
 					WHERE asset_name COLLATE SQL_Latin1_General_CP1_CI_AS = '$N';
 					COMMIT TRANSACTION;
 					"
@@ -65,10 +77,22 @@ Function Update-AssetName
 				ElseIf(Test-Connection -Cn $NN -BufferSize 16 -Count 1 -ea 0 -quiet)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey
+					[String]$manufact = (Get-WmiObject -ComputerName "$NN" Win32_SystemEnclosure).Manufacturer
+                	[String]$PcModel = (Get-WmiObject -ComputerName "$NN" -Class Win32_ComputerSystem).model
 					Invoke-Sqlcmd "
 					BEGIN TRANSACTION
 					UPDATE [dbo].[AssetList]
 					SET description = '$CmpDsc'
+					WHERE asset_name COLLATE SQL_Latin1_General_CP1_CI_AS = '$N';
+					UPDATE [dbo].[AssetList]
+					SET product_key = '$ProdKey'
+					WHERE asset_name COLLATE SQL_Latin1_General_CP1_CI_AS = '$N';
+					UPDATE [dbo].[AssetList]
+					SET manufacturer = '$manufact'
+					WHERE asset_name COLLATE SQL_Latin1_General_CP1_CI_AS = '$N';
+					UPDATE [dbo].[AssetList]
+					SET model = '$PcModel'
 					WHERE asset_name COLLATE SQL_Latin1_General_CP1_CI_AS = '$N';
 					COMMIT TRANSACTION;
 					"
@@ -94,10 +118,22 @@ Function Update-AssetName
 				If(!$IsOnline)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey
+					[String]$manufact = (Get-WmiObject -ComputerName "$NN" Win32_SystemEnclosure).Manufacturer
+                	[String]$PcModel = (Get-WmiObject -ComputerName "$NN" -Class Win32_ComputerSystem).model
 					Invoke-Sqlcmd "
 					BEGIN TRANSACTION
 					UPDATE [dbo].[AssetList]
 					SET description = '$CmpDsc'
+					WHERE serial_number COLLATE SQL_Latin1_General_CP1_CI_AS = '$S';
+					UPDATE [dbo].[AssetList]
+					SET product_key = '$ProdKey'
+					WHERE serial_number COLLATE SQL_Latin1_General_CP1_CI_AS = '$S';
+					UPDATE [dbo].[AssetList]
+					SET manufacturer = '$manufact'
+					WHERE serial_number COLLATE SQL_Latin1_General_CP1_CI_AS = '$S';
+					UPDATE [dbo].[AssetList]
+					SET model = '$PcModel'
 					WHERE serial_number COLLATE SQL_Latin1_General_CP1_CI_AS = '$S';
 					COMMIT TRANSACTION;
 					"
@@ -105,10 +141,22 @@ Function Update-AssetName
 				ElseIf(Test-Connection -Cn $NN -BufferSize 16 -Count 1 -ea 0 -quiet)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey
+					[String]$manufact = (Get-WmiObject -ComputerName "$NN" Win32_SystemEnclosure).Manufacturer
+                	[String]$PcModel = (Get-WmiObject -ComputerName "$NN" -Class Win32_ComputerSystem).model
 					Invoke-Sqlcmd "
 					BEGIN TRANSACTION
 					UPDATE [dbo].[AssetList]
 					SET description = '$CmpDsc'
+					WHERE serial_number COLLATE SQL_Latin1_General_CP1_CI_AS = '$S';
+					UPDATE [dbo].[AssetList]
+					SET product_key = '$ProdKey'
+					WHERE serial_number COLLATE SQL_Latin1_General_CP1_CI_AS = '$S';
+					UPDATE [dbo].[AssetList]
+					SET manufacturer = '$manufact'
+					WHERE serial_number COLLATE SQL_Latin1_General_CP1_CI_AS = '$S';
+					UPDATE [dbo].[AssetList]
+					SET model = '$PcModel'
 					WHERE serial_number COLLATE SQL_Latin1_General_CP1_CI_AS = '$S';
 					COMMIT TRANSACTION;
 					"
