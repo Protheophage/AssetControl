@@ -5,7 +5,8 @@ Function Update-AssetName
 	Update the asset name in SQL
 	
 	.DESCRIPTION
-	Finds the asset by ($Name) or ($Serial) and updates with the asset ($NewName)
+	Finds the asset by ($Name) or ($Serial) and updates with the asset ($NewName).
+	If the PC is online this will also querry it for its current description, product key, manufacturer, and model to update SQL.
 	
 	.PARAMETER Name
 	This is the current name of the asset.
@@ -13,6 +14,8 @@ Function Update-AssetName
 	This is the desired new asset name
 	.PARAMETER Serial
 	This is the serial number of the asset
+	.PARAMETER IsOnline
+	Boolean switch. If set to 1 or True will force skipping of check that PC is online
 	
 	.EXAMPLE
 	Update-AssetName('PC-42')('PC-24')
@@ -26,6 +29,10 @@ Function Update-AssetName
 	.EXAMPLE
 	Update-AssetName -Serial '1JXNRZ2','1JXHBZ2' -NewName 'PC-42','PC-13'
 	Update multiple assets serching by Serial Number
+
+	.EXAMPLE
+	Update-AssetName -Serial '1JXNRZ2' -NewName 'PC-42' -IsOnline 1
+	Update an asset name referencing by Serial and stating that the PC is online
 	#>
 	
 	[CmdletBinding()]
@@ -36,7 +43,7 @@ Function Update-AssetName
 		[parameter(ValueFromPipeline=$True)]
 		[String[]]$NewName,
 		[String]$Serial,
-		[Bool]$IsOnline
+		[Bool]$IsOnline = 0
 	)
 	
 	BEGIN
@@ -51,7 +58,7 @@ Function Update-AssetName
 			Foreach($N in $Name)
 			{
 				$NN = $NewName[$i]
-				If(!$IsOnline)
+				If($IsOnline = $True)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
 					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey
@@ -115,7 +122,7 @@ Function Update-AssetName
 			Foreach($S in $Serial)
 			{
 				$NN = $NewName[$i]
-				If(!$IsOnline)
+				If($IsOnline = $True)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
 					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey

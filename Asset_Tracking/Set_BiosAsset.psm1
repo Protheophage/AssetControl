@@ -27,14 +27,14 @@ Function Set-BiosAsset
     (
         [Parameter(ValueFromPipeline=$true)]
         [String[]]$Name,
-        [Bool]$IsOnline
+        [Bool]$IsOnline = 0
     )
 
     Process
     {
         Foreach($N in $Name)
         {
-            If(!$IsOnline)  
+            If($IsOnline = $False)  
             {  
                 #Check if PC is Online
                 If(!(Test-Connection -Cn $N -BufferSize 16 -Count 1 -ea 0 -quiet))
@@ -45,16 +45,13 @@ Function Set-BiosAsset
             }
             Else
             {
-                #Check PC type
+                #Gather Info From PC
                 $manufact = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).Manufacturer
                 $PcModel = (Get-WmiObject -ComputerName "$N" -Class Win32_ComputerSystem).model
-                $biosAtag = ''
+                $srlnmbr = (get-wmiobject -computername "$N" win32_bios).serialnumber
+                $biosAtag = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).SMBiosAssetTag
                 If($manufact -like "*dell*")
                 {
-                    #Gather Serial number
-                    $srlnmbr = (get-wmiobject -computername "$N" win32_bios).serialnumber
-                    #Check BIOS for Asset Tag
-                    $biosAtag = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).SMBiosAssetTag
                     If([string]::IsNullOrWhiteSpace($biosAtag))
                     {
                         [INT]$biosAtag = (Get-AssetInfo -Serial $srlnmbr -LogPath 'None').asset_id
@@ -63,28 +60,24 @@ Function Set-BiosAsset
                             #Set Asset Tag in BIOS
                             C:\sysinternals\PsExec.exe \\$N -accepteula -s powershell.exe "Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force;Install-Module DellBIOSProvider -force;Import-Module DellBIOSProvider -force;si DellSmbios:\systeminformation\asset -Value $($biosAtag)"
                             #Update Asset Name & Description in SQL
-                            Update-AssetName -Serial $srlnmbr -NewName $N
+                            Update-AssetName -Serial $srlnmbr -NewName $N -IsOnline 1
                             Write-Host $N" completed"
                         }
                         Else
                         {
-                            Write-Host $N"Asset ID is not set in SQL. Please update the Asset ID in SQL."
+                            Write-Host $N" Asset ID is not set in SQL. Please update the Asset ID in SQL."
                             Continue
                         } 
                     }
                     Else
                     {
-                        Update-AssetName -Serial $srlnmbr -NewName $N
+                        Update-AssetName -Serial $srlnmbr -NewName $N -IsOnline 1
                         Update-AssetID -Name $N -NewID $biosAtag
                         Write-Host $N" completed"
                     }
                 }
                 ElseIf($PcModel -like "*surface*")
                 {
-                    #Gather Serial number
-                    $srlnmbr = (get-wmiobject -computername "$N" win32_bios).serialnumber
-                    #Check BIOS for Asset Tag
-                    $biosAtag = (Get-WmiObject -ComputerName "$N" Win32_SystemEnclosure).SMBiosAssetTag
                     If([string]::IsNullOrWhiteSpace($biosAtag) -OR $biosAtag -eq "0")
                     {
                         [INT]$biosAtag = (Get-AssetInfo -Serial $srlnmbr -LogPath 'None').asset_id
@@ -100,7 +93,7 @@ Function Set-BiosAsset
                         }
                         Else
                         {
-                            Write-Host $N"Asset ID is not set in SQL. Please update the Asset ID in SQL."
+                            Write-Host $N" Asset ID is not set in SQL. Please update the Asset ID in SQL."
                             Continue
                         } 
                     }
