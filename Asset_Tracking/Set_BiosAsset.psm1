@@ -10,16 +10,16 @@ Function Set-BiosAsset
     .PARAMETER Name
     This is the current name of the asset
     .PARAMETER IsOnline
-    Set this to 1 or $TRUE to overide the ping test to check if PC is online
+    Switch. If set will force skipping of check that PC is online
 
     .EXAMPLE
     Set-BiosAsset -Name 'PC-42','PC-13','PC-88'
     Run process on multiple computers
     
     .EXAMPLE
-    Set-BiosAsset -Name 'PC-42-SURFACE' -IsOnline 1
+    Set-BiosAsset -Name 'PC-42-SURFACE' -IsOnline
     Set-BiosAsset does a ping check to see if the asset is online by default.  The firewall settings on Surfaces blocks ICMP Ping requests, and causes the process to end.
-    Set -IsOnline 1 to run the process without checking if the PC is online 
+    Set -IsOnline to run the process without checking if the PC is online 
     #>
 
     [CmdletBinding()]
@@ -27,14 +27,14 @@ Function Set-BiosAsset
     (
         [Parameter(ValueFromPipeline=$true)]
         [String[]]$Name,
-        [Bool]$IsOnline = 0
+        [switch]$IsOnline
     )
 
     Process
     {
         Foreach($N in $Name)
         {
-            If($IsOnline = $False)  
+            If(!$IsOnline)  
             {  
                 #Check if PC is Online
                 If(!(Test-Connection -Cn $N -BufferSize 16 -Count 1 -ea 0 -quiet))

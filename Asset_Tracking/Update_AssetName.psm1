@@ -15,7 +15,7 @@ Function Update-AssetName
 	.PARAMETER Serial
 	This is the serial number of the asset
 	.PARAMETER IsOnline
-	Boolean switch. If set to 1 or True will force skipping of check that PC is online
+	Switch. If set will force skipping of check that PC is online
 	
 	.EXAMPLE
 	Update-AssetName('PC-42')('PC-24')
@@ -31,7 +31,7 @@ Function Update-AssetName
 	Update multiple assets serching by Serial Number
 
 	.EXAMPLE
-	Update-AssetName -Serial '1JXNRZ2' -NewName 'PC-42' -IsOnline 1
+	Update-AssetName -Serial '1JXNRZ2' -NewName 'PC-42' -IsOnline
 	Update an asset name referencing by Serial and stating that the PC is online
 	#>
 	
@@ -43,7 +43,7 @@ Function Update-AssetName
 		[parameter(ValueFromPipeline=$True)]
 		[String[]]$NewName,
 		[String]$Serial,
-		[Bool]$IsOnline = 0
+		[switch]$IsOnline
 	)
 	
 	BEGIN
@@ -58,7 +58,7 @@ Function Update-AssetName
 			Foreach($N in $Name)
 			{
 				$NN = $NewName[$i]
-				If($IsOnline = $True)
+				If($IsOnline)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
 					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey
@@ -122,7 +122,7 @@ Function Update-AssetName
 			Foreach($S in $Serial)
 			{
 				$NN = $NewName[$i]
-				If($IsOnline = $True)
+				If($IsOnline)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
 					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey
