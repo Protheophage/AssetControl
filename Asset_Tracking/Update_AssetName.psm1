@@ -61,6 +61,7 @@ Function Update-AssetName
 				If($IsOnline)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					[String]$CmpDsc = $CmpDsc -replace '[\W]', ' '
 					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey
 					[String]$manufact = (Get-WmiObject -ComputerName "$NN" Win32_SystemEnclosure).Manufacturer
                 	[String]$PcModel = (Get-WmiObject -ComputerName "$NN" -Class Win32_ComputerSystem).model
@@ -84,6 +85,7 @@ Function Update-AssetName
 				ElseIf(Test-Connection -Cn $NN -BufferSize 16 -Count 1 -ea 0 -quiet)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					[String]$CmpDsc = $CmpDsc -replace '[\W]', ' '
 					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey
 					[String]$manufact = (Get-WmiObject -ComputerName "$NN" Win32_SystemEnclosure).Manufacturer
                 	[String]$PcModel = (Get-WmiObject -ComputerName "$NN" -Class Win32_ComputerSystem).model
@@ -125,6 +127,7 @@ Function Update-AssetName
 				If($IsOnline)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					[String]$CmpDsc = $CmpDsc -replace '[\W]', ' '
 					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey
 					[String]$manufact = (Get-WmiObject -ComputerName "$NN" Win32_SystemEnclosure).Manufacturer
                 	[String]$PcModel = (Get-WmiObject -ComputerName "$NN" -Class Win32_ComputerSystem).model
@@ -148,6 +151,7 @@ Function Update-AssetName
 				ElseIf(Test-Connection -Cn $NN -BufferSize 16 -Count 1 -ea 0 -quiet)
 				{
 					[String]$CmpDsc = (Get-WmiObject -ComputerName "$NN" -Class Win32_OperatingSystem).Description
+					[String]$CmpDsc = $CmpDsc -replace '[\W]', ' '
 					[String]$ProdKey = (get-wmiObject -computername "$NN" -Class SoftwareLicensingService).OA3xOriginalProductKey
 					[String]$manufact = (Get-WmiObject -ComputerName "$NN" Win32_SystemEnclosure).Manufacturer
                 	[String]$PcModel = (Get-WmiObject -ComputerName "$NN" -Class Win32_ComputerSystem).model
