@@ -85,7 +85,7 @@ Function Set-BiosAsset
                         {
                             #Set Asset Tag in BIOS
                             C:\sysinternals\PsExec.exe \\$N -accepteula -s powershell.exe "New-Item -Path 'c:\Program Files\' -Name 'SurfaceAssetTag' -ItemType 'directory' -Force"
-                            Copy-Item "\\kite\IT DEPT\Applications\Drivers\Device-Specific\Surface-Utils\Surface Asset Tag\AssetTag.exe" "\\$N\C$\Program Files\SurfaceAssetTag\AssetTag.exe" -Force
+                            Copy-Item "\\kite\IT Dept\Applications\Surface\Surface-Utils-Gen-Independent\Surface_Asset_Tag\AssetTag.exe" "\\$N\C$\Program Files\SurfaceAssetTag\AssetTag.exe" -Force
                             C:\sysinternals\PsExec.exe \\$N -accepteula -s powershell.exe "Start-Process -filepath 'C:\Program Files\SurfaceAssetTag\AssetTag.exe' -ArgumentList '-s $($biosAtag)'"
                             #Update Asset Name & Description in SQL
                             Update-AssetName -Serial $srlnmbr -NewName $N -IsOnline 1
