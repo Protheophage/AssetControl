@@ -72,7 +72,6 @@ Function Set-BiosAsset
                     Else
                     {
                         Update-AssetName -Serial $srlnmbr -NewName $N -IsOnline 1
-                        Update-AssetID -Name $N -NewID $biosAtag
                         Write-Host $N" completed"
                     }
                 }
@@ -100,7 +99,6 @@ Function Set-BiosAsset
                     Else
                     {
                         Update-AssetName -Serial $srlnmbr -NewName $N -IsOnline 1
-                        Update-AssetID -Name $N -NewID $biosAtag
                         Write-Host $N" completed"
                     }
                 }
