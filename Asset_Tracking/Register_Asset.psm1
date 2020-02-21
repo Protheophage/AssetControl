@@ -59,7 +59,7 @@ Function Register-Asset
     
     BEGIN
     {
-		Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
+		Set-Location SQLSERVER:<Your_SQL_Server>Databases\Assets\Tables
 		$i = 0
     }
     PROCESS

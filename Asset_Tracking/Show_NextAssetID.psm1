@@ -6,7 +6,7 @@ Function Show-NextAssetID
 	#>
 	
     ##Set Location of PS instance to SQL Database
-	Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
+	Set-Location SQLSERVER:<Your_SQL_Server>Databases\Assets\Tables
 	
 	##Set variable for asset id
 	$Assetted = Invoke-Sqlcmd "SELECT MAX(asset_id)+1 FROM dbo.AssetList Where asset_id IS NOT NULL AND asset_id < 9990000;"

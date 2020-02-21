@@ -39,7 +39,7 @@ Function Is-inSQL
 	#>
 
 	##Set Location of PS instance to SQL Database
-	Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
+	Set-Location SQLSERVER:<Your_SQL_Server>Databases\Assets\Tables
 	$cmpFnd = Invoke-Sqlcmd "SELECT * FROM dbo.AssetList Where asset_name COLLATE SQL_Latin1_General_CP1_CI_AS = '$comp';"
 
 	##Return to default PS location
@@ -195,7 +195,7 @@ Function Get-PcInfo
 	#>
 
 	##Set Location of PS instance to SQL Database
-	Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
+	Set-Location SQLSERVER:<Your_SQL_Server>Databases\Assets\Tables
 	
 	##Set variable for asset id
 	$Assetted = Invoke-Sqlcmd "SELECT MAX(asset_id)+1 FROM dbo.AssetList Where asset_id IS NOT NULL AND asset_id < 9990000;"
@@ -270,7 +270,7 @@ Function Send-ADinfo
 	#>
 	
 	##Set Location of PS instance to SQL Database
-	Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
+	Set-Location SQLSERVER:<Your_SQL_Server>Databases\Assets\Tables
 
 	##Update remaining info in SQL
 	Invoke-Sqlcmd "INSERT INTO [dbo].[Laps_Log]
@@ -297,7 +297,7 @@ Function Send-SQLinfo
 	#>
 	
 	##Set Location of PS instance to SQL Database
-	Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
+	Set-Location SQLSERVER:<Your_SQL_Server>Databases\Assets\Tables
 
 	##Update remaining info in SQL
 	Invoke-Sqlcmd "UPDATE dbo.AssetList SET date_added = GetDate(), date_updated = GetDate(), asset_name = '$SQName', asset_type_name = '$SQTypeName', serial_number = '$SQSerial', manufacturer = '$SQManufacturer', model = '$SQModel', description = '$($CmpDescription).description', product_key = '$SQProdKey', status = '1', purch_price = $($purval) WHERE asset_id = '$Assetted';"
@@ -485,7 +485,7 @@ Function Get-AssetID
 	#>
 	
 	##Set Location of PS instance to SQL Database
-	Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
+	Set-Location SQLSERVER:<Your_SQL_Server>Databases\Assets\Tables
 	
 	##Set variable for asset id
 	$Assetted = Invoke-Sqlcmd "SELECT MAX(asset_id)+1 FROM dbo.AssetList Where asset_id IS NOT NULL AND asset_id < 9990000;"

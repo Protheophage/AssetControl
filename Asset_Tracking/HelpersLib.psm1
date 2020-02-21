@@ -36,7 +36,7 @@ Function Confirm-inSQL
 	BEGIN
 	{
 		##Set Location of PS instance to SQL Database
-		Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
+		Set-Location SQLSERVER:<Your_SQL_Server>Databases\Assets\Tables
 	}
 	
 	PROCESS

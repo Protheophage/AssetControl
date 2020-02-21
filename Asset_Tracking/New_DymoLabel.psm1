@@ -30,13 +30,13 @@ Function New-DymoLabel
 		If(!$dymoPrint)
 		{
 			Write-Output 'You do not have a DYMO printer'
-			Write-Output 'Adding DYMO printer \\IT-SYN\IT DYMO'
-			Add-Printer -ConnectionName "\\IT-SYN\IT DYMO"
+			Write-Output 'Adding DYMO printer <Path-to-shared-dymoPrinter>'
+			Add-Printer -ConnectionName "<Path-to-shared-dymoPrinter>"
 		}
 		$dymmoSoft = get-package -Name "*Dymo Label*" -ErrorAction SilentlyContinue
 		If(!$dymmoSoft)
 		{
-			start-process msiexec.exe -argumentList '/i', '"\\kite\IT Dept\Applications\Dymo\DYMO Label.msi"', '/passive' -PassThru -verb runas -wait
+			start-process msiexec.exe -argumentList '/i', '"<Path-to-DymoLabelMsi>\DYMO Label.msi"', '/passive' -PassThru -verb runas -wait
 		}
 	}
 	PROCESS
@@ -50,7 +50,7 @@ Function New-DymoLabel
 
 			$printername = [DYMO.Label.Framework.Framework]::GetLabelWriterPrinters() | Select-Object -ExpandProperty name
 
-			$labelfile = '\\kite\IT Dept\Applications\Dymo\AssetID Template.label'
+			$labelfile = '<Path-to-DymoLabel-Template> Template.label'
 
 			$label = [Dymo.label.framework.label]::open($labelfile)
 			$label.SetObjectText('Asset Number',$ANum)

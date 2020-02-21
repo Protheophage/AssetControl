@@ -67,7 +67,7 @@ Function Get-AssetInfo
 	{
 		IF(!$LogPath) {$LogPath = "$($env:USERPROFILE)\Desktop\Search_Log.txt"}
 		$ChangeLog = @()
-		Set-Location SQLSERVER:\SQL\PROMETHEUS\DEFAULT\Databases\Assets\Tables
+		Set-Location SQLSERVER:<Your_SQL_Server>Databases\Assets\Tables
 	}
 	PROCESS
 	{
